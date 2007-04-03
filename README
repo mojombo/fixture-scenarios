@@ -1,0 +1,116 @@
+Copyright (c) 2006 Tom Preston-Werner
+
+=FixtureScenarios
+
+This plugin allows you to create "scenarios" which are collections of fixtures
+and ruby files that represent a context against which you can run tests.
+
+==Disclaimer
+
+This software is in Beta.
+Send feedback to tom at rubyisawesome dot com or find me (mojombo) on #caboose.
+
+==Installation
+
+FixtureScenarios should work on both 1.1.6 and edge rails.
+Currently you must install this plugin from the subversion repository
+
+  script/plugin install http://fixture-scenarios.googlecode.com/svn/trunk/fixture_scenarios
+
+==WARNING
+
+Because this plugin clears out fixture data between your test classes, you may
+see some of your tests fail after installation. If this occurs, look at your
+tests to see if you didn't actually load a required fixture for that test
+class. If you forgot to add it and your tests passed anyway (because of
+fixture contamination), just add the missing fixture(s) and you'll be good
+to go.
+
+==The Basics
+
+To create a scenario, simply create a subdirectory under test/fixtures in your
+Rails app. The name of the subdirectory will be the name of the scenario.
+Inside this new directory, you can place fixture files, and/or Ruby files.
+
+  [RAILS_ROOT]
+  +-test/
+    +-fixtures/
+      +-brand_new_user/
+        +-users.yml
+  
+  # in users.yml
+  borges:
+    id: 1
+    name: Jorge Luis Borges
+    active: 1
+
+To load the scenario for testing, you simply use the +scenario+ method instead
+of the normal +fixtures+ method.
+
+  require File.dirname(__FILE__) + '/../test_helper'
+
+  class UserTest < Test::Unit::TestCase
+    scenario :brand_new_user
+
+    def test_should_be_active
+      assert users(:borges).active?
+    end
+  end
+
+All of the fixtures placed into your scenario directory will be loaded when
+you invoke the +scenario+ method with your scenario name. In addition, any
+Ruby files you place in the scenario directory will be run after the fixtures.
+You can use a Ruby file to create non-database model instances, set up
+relationships between fixtures (instead of creating fixtures for the join
+tables), or replace fixtures entirely by creating your database items with
+Ruby code.
+
+In this example, +scenario+ will actually load all fixtures from the fixture
+directory *and* your scenario directory. This is useful if you have some
+fixtures (such as lookup data) that you'd like to have in most of your
+scenarios. To prevent the loading of fixtures in the fixtures root directory,
+use the <tt>:root</tt> option. This can be very useful if you still have tests
+using regular fixtures.
+
+  scenario :brand_new_user, :root => false
+
+To keep things DRY in your scenarios, you can extend or layer scenarios on top
+of each other. Following with our example, to create an "experienced user"
+scenario, we could create another subdirectory under the existing
+"brand_new_user" that would contain fixture/Ruby files that add upon the
+"brand new user" scenario.
+
+  [RAILS_ROOT]
+  +-test/
+    +-fixtures/
+      +-brand_new_user/
+        +-users.yml
+        +-experienced_user/
+          +-articles.yml
+
+Now when you load the +experienced_user+ scenario, it will load any
+fixture/Ruby files in "fixtures", then in "brand_new_user", then in
+"experienced_user"! Building off of your existing scenarios keeps data
+redundancy to a minimum, and makes it easy to change data for multiple
+scenarios simultaneously.
+
+==Testing your scenarios
+
+Scenarios represent your assumptions about a given context. If these
+assumptions are wrong, your tests will be inaccurate. Your scenarios should be
+unit tested along with the rest of your application. This plugin allows you to
+place scenario tests in a "scenario" directory under your "test" directory.
+
+  [RAILS_ROOT]
+  +-test/
+    +-scenario/
+      +-brand_new_user_test.rb
+      +-experienced_user_test.rb
+  
+You can run these tests with rake.
+
+  rake test:scenarios  # run just scenario tests
+  rake                 # run unit, functional, integration, and scenario tests
+
+Scenario tests will protect you from accidentally changing your assumptions in
+a dangerous or transparent way when modifying existing scenarios.
