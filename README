@@ -1,4 +1,4 @@
-Copyright (c) 2006 Tom Preston-Werner
+Copyright (c) 2007 Tom Preston-Werner
 
 =FixtureScenarios
 
@@ -8,7 +8,7 @@ and ruby files that represent a context against which you can run tests.
 ==Disclaimer
 
 This software is in Beta.
-Send feedback to tom at rubyisawesome dot com or find me (mojombo) on #caboose.
+Send feedback to tom at rubyisawesome dot com or find me (mojombo) on irc.freenode.net.
 
 ==Installation
 
