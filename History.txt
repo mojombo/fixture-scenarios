@@ -1,0 +1,2 @@
+= TRUNK
+  - added "scenarios_load_root_fixtures" option to set default root loading [Peter Williams]

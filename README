@@ -73,6 +73,13 @@ use the <tt>:root</tt> option. This can be very useful if you still have tests
 using regular fixtures.
 
   scenario :brand_new_user, :root => false
+  
+If you've just started FixtureScenarios on an existing project, adding
+:root => false to every scenario call will become tedious, so you can set
+the option globally in your test_helper.rb (inside the Test::Unit::TestCase
+class) like so:
+
+  self.scenarios_load_root_fixtures = false
 
 To keep things DRY in your scenarios, you can extend or layer scenarios on top
 of each other. Following with our example, to create an "experienced user"

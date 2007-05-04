@@ -164,8 +164,12 @@ module Test #:nodoc:
       class_inheritable_accessor :fixture_file_names
       class_inheritable_accessor :ruby_file_names
       
+      class_inheritable_accessor :scenarios_load_root_fixtures
+      
       self.ruby_file_names = []
       self.fixture_file_names = {}
+      
+      self.scenarios_load_root_fixtures = true
       
       def self.finish
         Fixtures.destroy_fixtures(fixture_table_names)
@@ -186,7 +190,7 @@ module Test #:nodoc:
       
       def self.scenario(scenario_name = nil, options = {})
         # handle options
-        defaults = {:root => true}
+        defaults = {:root => self.scenarios_load_root_fixtures}
         options = defaults.merge(options)
         
         # find the scenario directory
